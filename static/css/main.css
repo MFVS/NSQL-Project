@@ -1,0 +1,10 @@
+body {
+    text-align: center;
+    margin: auto;
+    font-family : sans-serif;
+}
+ul {
+    display: table; 
+    margin: 0 auto;
+    text-align: left;
+}
