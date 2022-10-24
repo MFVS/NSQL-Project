@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+
+
+<form action = "http://localhost:5000" method = "post">
+    <p>Email:</p>
+    <p><input type = "email" name = "em" /></p>
+    <p>Username:</p>
+    <p><input type = "text" name = "nm" /></p>
+    <p>Password:</p>
+    <p><input type = "password" name = "pw" /></p>
+    <p><input type = "submit" value = "Register" /></p>
+</form>
+
+{% endblock %}
