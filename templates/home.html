@@ -1,18 +1,19 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block head %}
 
-{% block head %} 
+<h1 style="text-align: center; color: white">Homepage</h1>
 
-<h1 text-align = 'center' >Homepage</h1>
+{% endblock %} {% block body %}
 
-{% endblock %}
+<script
+  type="text/javascript"
+  src="{{ url_for('static', filename = 'hello.js') }}"
+></script>
 
-{% block body %}
-
-<ul >
-    <li><a href="http://localhost:5000/login"> Login</a></li>
-    <li><a href = "http://localhost:5000/database"> Users</a></li>
-    <li><a href="http://localhost:5000/json"> Link json</a></li>
-</ul>
-
+<input
+  type="button"
+  onclick="sayHello()"
+  class="btn btn-primary"
+  value="Say hello to astronaut"
+/>
 
 {% endblock %}

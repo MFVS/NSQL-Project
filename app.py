@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, login_user, UserMixin
+from flask_login import LoginManager, login_user,logout_user, UserMixin, login_required
 from wtforms import Form, StringField, PasswordField, validators
 
 
@@ -33,16 +33,16 @@ with app.app_context():
 
 
 class RegistrationForm(Form):
-    username = StringField("", [validators.Length(min=4, max=25)])
-    email = StringField("", [validators.Length(min=6, max=35)])
+    username = StringField("Username: ", [validators.Length(min=4, max=25)])
+    email = StringField("Email: ", [validators.Length(min=6, max=35)])
     password = PasswordField(
-        "",
+        "Password: ",
         [
             validators.DataRequired(),
             validators.EqualTo("confirm", message="Passwords must match"),
         ],
     )
-    confirm = PasswordField("")
+    confirm = PasswordField("Confirm password: ")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -70,19 +70,19 @@ def register():
 
 
 @app.route("/home")
+@login_required
 def home():
     return render_template("home.html")
 
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 @app.route("/database")
 def database():
     users = Users.query.order_by(Users.id).all()
     return render_template("database.html", users=users)
-
-
-@app.route("/json")
-def hello_js():
-    return render_template("js.html")
 
 
 if __name__ == "__main__":
