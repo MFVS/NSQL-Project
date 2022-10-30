@@ -1,12 +1,12 @@
 {% extends 'base.html' %} {% block head %} {% endblock %} {% block body %}
 
-<div class="contaienr border">
+<div class="container d-flex border rounded justify-content-center bg-light">
   <form action="http://localhost:5000/login" method="post">
     <p>Enter Name:</p>
     <p><input type="text" name="nm" /></p>
     <p>Enter Password:</p>
     <p><input type="text" name="pw" /></p>
-    <p><input type="submit" value="submit" /></p>
+    <p><input type="submit" value="Submit" /></p>
     <p>
       <a
         class="btn btn-primary"

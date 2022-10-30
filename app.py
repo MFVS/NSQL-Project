@@ -33,24 +33,25 @@ with app.app_context():
 
 
 class RegistrationForm(Form):
-    username = StringField("Username: ", [validators.Length(min=4, max=25)])
+    username = StringField('Username: ', [validators.Length(min=4, max=25)])
     email = StringField("Email: ", [validators.Length(min=6, max=35)])
     password = PasswordField(
         "Password: ",
         [
             validators.DataRequired(),
-            validators.EqualTo("confirm", message="Passwords must match"),
+            validators.EqualTo("confirm", message='Passwords must match.'),
         ],
     )
     confirm = PasswordField("Confirm password: ")
 
-
+@app.route('/')
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     return render_template("login.html")
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm(request.form)
     if request.method == "POST" and form.validate():
