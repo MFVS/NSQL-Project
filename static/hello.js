@@ -1,3 +1,3 @@
 function sayHello() {
-    alert("Hello JavaScript")
- }
+  alert("Enjoy the view moron.");
+}
