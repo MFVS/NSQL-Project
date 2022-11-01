@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask, render_template, redirect, request, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user,logout_user, UserMixin, login_required
 from wtforms import Form, StringField, PasswordField, validators
@@ -33,22 +33,33 @@ with app.app_context():
 
 
 class RegistrationForm(Form):
-    username = StringField('Username: ', [validators.Length(min=4, max=25)])
-    email = StringField("Email: ", [validators.Length(min=6, max=35)])
+    username = StringField('Username: ', [validators.Length(min=4, max=15)])
+    email = StringField("Email: ", [validators.Length(min=6, max=25)])
     password = PasswordField(
         "Password: ",
-        [
-            validators.DataRequired(),
-            validators.EqualTo("confirm", message='Passwords must match.'),
-        ],
+        [validators.DataRequired(),validators.EqualTo("confirm", message='Passwords must match.')],
     )
     confirm = PasswordField("Confirm password: ")
 
-@app.route('/')
+class LoginForm(Form):
+    username = StringField('Username: ', [validators.Length(min=4, max=15)])
+    password = PasswordField('Password: ', [validators.DataRequired()])
+
+@app.route('/', methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
-
-    return render_template("login.html")
+    form = LoginForm(request.form)
+    if request.method == "POST" and form.validate():
+        user = Users.query.filter_by(username = form.username.data).first()
+        try:
+            if user.password == form.username.data:
+                login_user(user)
+                return redirect(url_for('home'))
+            else:
+                flash('Check your username and password and try again.', 'error')
+        except:
+            flash('Check your username and password and try again.', 'error')
+    return render_template("login.html", form = form)
 
 
 @app.route("/register", methods=["GET", "POST"])

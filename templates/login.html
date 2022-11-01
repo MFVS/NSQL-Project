@@ -1,19 +1,27 @@
 {% extends 'base.html' %} {% block head %} {% endblock %} {% block body %}
 
-<div class="container d-flex border rounded justify-content-center bg-light">
-  <form action="http://localhost:5000/login" method="post">
-    <p>Enter Name:</p>
-    <p><input type="text" name="nm" /></p>
-    <p>Enter Password:</p>
-    <p><input type="text" name="pw" /></p>
-    <p><input type="submit" value="Submit" /></p>
+<div class="container d-flex border rounded justify-content-center bg-light w-25
+  p-3 my-5 mx-auto ">
+  <form method="post">
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <p class= 'alert alert-danger mt-1'>{{ message }}</li>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <p>{{ form.username.label}}</p>
+    <p>{{ form.username }}</p>
+    <p>{{ form.password.label }}</p>
+    <p>{{ form.password }}</p>
+    <p><input type= submit value="Login"/></p>
     <p>
       <a
         class="btn btn-primary"
         href="http://localhost:5000/register"
-        role="button"
-        >Don't have an account</a
-      >
+        role="button">Don't have an account</a>
     </p>
   </form>
 </div>
