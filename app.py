@@ -20,7 +20,7 @@ login_manager.init_app(app)
 def load_user(user_id):
     return Users.query.get(user_id)
 
-
+# Users
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
