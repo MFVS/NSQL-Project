@@ -8,11 +8,12 @@
     type="text/javascript"
     src="{{ url_for('static', filename= 'hello.js') }}"></script>
 
-<input
-    type="button"
-    onclick="sayHello()"
-    class="btn btn-primary"
-    value="Say hello to astronaut"
-    />
-
+<div class= 'container d-flex justify-content-center'>
+    <input
+        type="button"
+        onclick="sayHello()"
+        class="btn btn-primary"
+        value="Say hello to astronaut"
+        />
+</div>
 {% endblock %}
