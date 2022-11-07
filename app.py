@@ -52,7 +52,7 @@ def login():
     if request.method == "POST" and form.validate():
         user = Users.query.filter_by(username = form.username.data).first()
         try:
-            if user.password == form.username.data:
+            if user.password == form.password.data:
                 login_user(user)
                 return redirect(url_for('home'))
             else:
@@ -92,6 +92,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route("/database")
+@login_required
 def database():
     users = Users.query.order_by(Users.id).all()
     return render_template("database.html", users=users)
