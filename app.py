@@ -44,7 +44,9 @@ class RegistrationForm(Form):
 class LoginForm(Form):
     username = StringField('Username: ', [validators.Length(min=4, max=15)])
     password = PasswordField('Password: ', [validators.DataRequired()])
-
+    
+    
+@app.route('/', methods = ['GET','POST'])
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm(request.form)

@@ -1,19 +1,20 @@
 {% extends 'base.html' %} {% block head %}
 
-<h1 style="text-align: center; color: white">Homepage</h1>
+<h1 style="text-align: center; color: white">Hompáž</h1>
 
 {% endblock %} {% block body %}
 
 <script
-    type="text/javascript"
-    src="{{ url_for('static', filename= 'hello.js') }}"></script>
+  type="text/javascript"
+  src="{{ url_for('static', filename= 'hello.js') }}"
+></script>
 
-<div class= 'container d-flex justify-content-center'>
-    <input
-        type="button"
-        onclick="sayHello()"
-        class="btn btn-primary"
-        value="Say hello to astronaut"
-        />
+<div class="container d-flex justify-content-center">
+  <input
+    type="button"
+    onclick="sayHello()"
+    class="btn btn-primary"
+    value="Say hello to astronaut"
+  />
 </div>
 {% endblock %}
