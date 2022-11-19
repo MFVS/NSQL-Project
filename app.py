@@ -4,36 +4,32 @@ from flask_login import LoginManager, login_user,logout_user, UserMixin, login_r
 from wtforms import Form, StringField, PasswordField, validators
 import psycopg2
 
-# db = SQLAlchemy()
+db = SQLAlchemy()
 login_manager = LoginManager()
 
 app = Flask(__name__)  # http://localhost:5000
 
 
-# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
-app.config['DATABASE_URL'] = 'postgresql://postgres:postgres@localhost:5432/kosmonauti'
-conn = psycopg2.connect( host="localhost", database = 'kosmonauti', user = 'kosmonauti', password = 'heslo')
-cursor = conn.cursor()
+app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://Buzz:Raketak@localhost:5432/postgres'   #docker run --name kosmonauti -e POSTGRES_USER=Buzz -e POSTGRES_PASSWORD=Raketak -p 5432:5432 -d postgres
 app.config["SECRET_KEY"] = "secretkey"
-# db.init_app(app)
+db.init_app(app)
 login_manager.init_app(app)
 
 
-# @login_manager.user_loader
-# def load_user(user_id):
-#     return Users.query.get(user_id)
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(user_id)
 
 # Users
-# class Users(UserMixin, db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String, unique=True, nullable=False)
-#     password = db.Column(db.String, nullable=False)
-#     email = db.Column(db.String, nullable=False, unique=True)
+class Users(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False, unique=True)
 
 
-# with app.app_context():
-#     db.create_all()
-cursor.execute('CREATE TABLE IF NOT EXISTS Users (id PRIMARY KEY, username TEXT UNIQUE NOT NULL, password TEXT UNIQUE NOT NULL, email TEXT UNIQUE NOT NULL);')
+with app.app_context():
+    db.create_all()
 
 
 class RegistrationForm(Form):
@@ -68,30 +64,22 @@ def login():
 
 
 @app.route("/register", methods=["GET", "POST"])
-# def register():
-#     form = RegistrationForm(request.form)
-#     if request.method == "POST" and form.validate():
-#         new_user = Users(
-#             username=form.username.data,
-#             email=form.email.data,
-#             password=form.password.data,
-#         )
-#         try:
-#             db.session.add(new_user)
-#             db.session.commit()
-#         except:
-#             return "ERROR"
-#         login_user(new_user)
-#         return redirect(url_for("home"))
-#     return render_template("register.html", form=form)
 def register():
     form = RegistrationForm(request.form)
     if request.method == "POST" and form.validate():
-        username=form.username.data,
-        email=form.email.data,
-        password=form.password.data
-        with cursor:
-            cursor.execute(('INSERT INTO '))
+        new_user = Users(
+            username=form.username.data,
+            password=form.password.data,
+            email=form.email.data
+        )
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+        except:
+            return "ERROR"
+        login_user(new_user)
+        return redirect(url_for("home"))
+    return render_template("register.html", form=form)
 
 @app.route("/home")
 @login_required
@@ -111,4 +99,4 @@ def database():
 
 
 if __name__ == "__main__":
-    app.run(port=5000, host="0.0.0.0")  # set FLASK_DEBUG=1
+    app.run(port=5000, host="0.0.0.0")
