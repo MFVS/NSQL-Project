@@ -6,7 +6,7 @@ from wtforms import Form, StringField, PasswordField, validators
 db = SQLAlchemy()
 login_manager = LoginManager()
 
-app = Flask(__name__)  # http://localhost:5000
+app = Flask(__name__)
 
 
 # docker run --name kosmonauti -e POSTGRES_USER=Buzz -e POSTGRES_PASSWORD=Raketak -p 5432:5432 -d postgres
