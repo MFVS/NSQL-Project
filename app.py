@@ -1,8 +1,7 @@
 from flask import Flask, render_template, redirect, request, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, login_user,logout_user, UserMixin, login_required
+from flask_login import LoginManager, login_user, logout_user, UserMixin, login_required
 from wtforms import Form, StringField, PasswordField, validators
-import psycopg2
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -10,7 +9,8 @@ login_manager = LoginManager()
 app = Flask(__name__)  # http://localhost:5000
 
 
-app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://Buzz:Raketak@localhost:5432/postgres'   #docker run --name kosmonauti -e POSTGRES_USER=Buzz -e POSTGRES_PASSWORD=Raketak -p 5432:5432 -d postgres
+# docker run --name kosmonauti -e POSTGRES_USER=Buzz -e POSTGRES_PASSWORD=Raketak -p 5432:5432 -d postgres
+app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:postgrespw@databasepg:5432'
 app.config["SECRET_KEY"] = "secretkey"
 db.init_app(app)
 login_manager.init_app(app)
@@ -21,6 +21,8 @@ def load_user(user_id):
     return Users.query.get(user_id)
 
 # Users
+
+
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -37,21 +39,23 @@ class RegistrationForm(Form):
     email = StringField("Email: ", [validators.Length(min=6, max=25)])
     password = PasswordField(
         "Password: ",
-        [validators.DataRequired(),validators.EqualTo("confirm", message='Passwords must match.')],
+        [validators.DataRequired(), validators.EqualTo(
+            "confirm", message='Passwords must match.')],
     )
     confirm = PasswordField("Confirm password: ")
+
 
 class LoginForm(Form):
     username = StringField('Username: ', [validators.Length(min=4, max=15)])
     password = PasswordField('Password: ', [validators.DataRequired()])
-    
-    
-@app.route('/', methods = ['GET','POST'])
+
+
+@app.route('/', methods=['GET', 'POST'])
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
-        user = Users.query.filter_by(username = form.username.data).first()
+        user = Users.query.filter_by(username=form.username.data).first()
         try:
             if user.password == form.password.data:
                 login_user(user)
@@ -60,7 +64,7 @@ def login():
                 flash('Check your username and password and try again.', 'error')
         except:
             flash('Check your username and password and try again.', 'error')
-    return render_template("login.html", form = form)
+    return render_template("login.html", form=form)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -81,15 +85,18 @@ def register():
         return redirect(url_for("home"))
     return render_template("register.html", form=form)
 
+
 @app.route("/home")
 @login_required
 def home():
     return render_template("home.html")
 
+
 @app.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
 
 @app.route("/database")
 @login_required
