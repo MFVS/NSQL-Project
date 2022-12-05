@@ -3,7 +3,7 @@
   <head>
     <style>
       body {
-        background-image: url("static/images/astronaut.jpg");
+        background-image: url("/static/images/astronaut.jpg");
         background-size: 100% auto;
       }
     </style>
@@ -35,6 +35,9 @@
           <a class="nav-link" href="/database">Users</a>
         </li>
       </ul>
+      <a class="btn btn-secondary" href="/user  "
+        >{{ current_user.username }}</a
+      >
       <a class="btn btn-outline-primary mx-3 ms-auto" href="/logout">Log out</a>
     </nav>
     {% endif %} {% block head %} {% endblock %}

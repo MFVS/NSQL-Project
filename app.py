@@ -1,7 +1,8 @@
 from flask import Flask, render_template, redirect, request, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, login_user, logout_user, UserMixin, login_required
+from flask_login import LoginManager, login_user, logout_user, UserMixin, login_required, current_user
 from wtforms import Form, StringField, PasswordField, validators
+from neo4j import GraphDatabase
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -21,8 +22,6 @@ def load_user(user_id):
     return Users.query.get(user_id)
 
 # Users
-
-
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -44,15 +43,20 @@ class RegistrationForm(Form):
     )
     confirm = PasswordField("Confirm password: ")
 
-
 class LoginForm(Form):
     username = StringField('Username: ', [validators.Length(min=4, max=15)])
     password = PasswordField('Password: ', [validators.DataRequired()])
+    
+class ChangeForm(Form):
+    username = StringField('Username: ', [validators.Length(min=4, max=15)])
+    email = StringField("Email: ", [validators.Length(min=6, max=25)])
 
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
         user = Users.query.filter_by(username=form.username.data).first()
@@ -104,6 +108,9 @@ def database():
     users = Users.query.order_by(Users.id).all()
     return render_template("database.html", users=users)
 
+@app.route('/user', methods = ['GET','PUT','DELETE'])
+def user_page():
+    return render_template('user.html')
 
 if __name__ == "__main__":
     app.run(port=5000, host="0.0.0.0")
