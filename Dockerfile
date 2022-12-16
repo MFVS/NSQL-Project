@@ -13,4 +13,4 @@ WORKDIR /project
 # COPY --from=builder /install /usr/local
 ADD . /project
 EXPOSE 5000
-ENTRYPOINT ["python", "-m", "flask", "run", "--host=0.0.0.0"]
+ENTRYPOINT ["python", "-m", "flask","--debug", "run", "--host=0.0.0.0"]

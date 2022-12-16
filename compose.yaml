@@ -2,31 +2,36 @@ version: "3"
 services:
   databasepg:
     image: postgres
-    volumes:
-      - db-chase:/var/lib/postgresql/data
+    # volumes:
+    #   - db-chase:/var/lib/postgresql/data
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_PASSWORD=postgrespw
       - POSTGRES_HOST_AUTH_METHOD=trust
     networks:
       - cirkushumberto
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - cirkushumberto
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    networks:
+      - cirkushumberto
   app:
     build: .
     depends_on:
       - databasepg
+      - redis
     ports:
       - 5000:5000
     networks:
       - cirkushumberto
     restart: on-failure
-  neo4j:
-    image: neo4j
-    ports:
-      - "7474:7474"
-      - "7475:7475"
-      - "7687:7687"
-    environment:
-      NEO4J_AUTH: neo4j/hesl0
 networks:
   cirkushumberto:
 volumes:
