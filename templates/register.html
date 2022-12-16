@@ -1,18 +1,24 @@
 {% extends 'base.html' %} {% block head %} {% endblock %} {% block body %}
 
-<div class="container d-flex border rounded justify-content-center bg-light w-25
-    p-3 my-5 mx-auto ">
-    <form method="post">
-        <p>{{ form.username.label}}</p>
-        <p>{{ form.username }}</p>
-        <p>{{ form.email.label }}</p>
-        <p>{{ form.email }}</p>
-        <p>{{ form.password.label }}</p>
-        <p>{{ form.password }}</p>
-        <p>{{ form.confirm.label }}</p>
-        <p>{{ form.confirm }}</p>
-        <p><input type="submit" value="Register" /></p>
-    </form>
+<div
+  class="container d-flex border rounded justify-content-center bg-light w-25 p-3 my-5 mx-auto"
+>
+  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
+  in messages %}
+  <p class="alert alert-danger mt-1">{{ message }}</p>
+  {% endfor %} {% endif %} {% endwith %}
+
+  <form method="post">
+    <p>{{ form.username.label}}</p>
+    <p>{{ form.username }}</p>
+    <p>{{ form.email.label }}</p>
+    <p>{{ form.email }}</p>
+    <p>{{ form.password.label }}</p>
+    <p>{{ form.password }}</p>
+    <p>{{ form.confirm.label }}</p>
+    <p>{{ form.confirm }}</p>
+    <p><input type="submit" value="Register" /></p>
+  </form>
 </div>
 
 {% endblock %}

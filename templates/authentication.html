@@ -1,0 +1,13 @@
+{% extends 'base.html' %} {% block head %} {% endblock %} {% block body %}
+
+
+<div class="container d-flex border rounded justify-content-center bg-light w-25
+  p-3 my-5 mx-auto ">
+
+<form method="post">
+
+<p>{{ form.password.label }}</p>
+<p>{{ form.password }}</p>
+
+</div>
+{% endblock %}

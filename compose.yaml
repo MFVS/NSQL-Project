@@ -1,19 +1,32 @@
-version: '3'
+version: "3"
 services:
   databasepg:
     image: postgres
-    volumes:
-      - db-chase:/var/lib/postgresql/data
+    # volumes:
+    #   - db-chase:/var/lib/postgresql/data
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_PASSWORD=postgrespw
       - POSTGRES_HOST_AUTH_METHOD=trust
     networks:
       - cirkushumberto
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - cirkushumberto
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    networks:
+      - cirkushumberto
   app:
     build: .
     depends_on:
       - databasepg
+      - redis
     ports:
       - 5000:5000
     networks:
