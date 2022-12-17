@@ -1,13 +1,14 @@
-{% extends 'base.html' %} {% block head %} {% endblock %} {% block body %}
+{% extends 'base.html' %} {% block head %} {% with messages =
+get_flashed_messages() %} {% if messages %} {% for message in messages %}
+
+<div class="row justify-content-center">
+  <p class="alert alert-danger mt-1 col-lg-2">{{ message }}</p>
+</div>
+{% endfor %} {% endif %} {% endwith %} {% endblock %} {% block body %}
 
 <div
   class="container d-flex border rounded justify-content-center bg-light w-25 p-3 my-5 mx-auto"
 >
-  {% with messages = get_flashed_messages() %} {% if messages %} {% for message
-  in messages %}
-  <p class="alert alert-danger mt-1">{{ message }}</p>
-  {% endfor %} {% endif %} {% endwith %}
-
   <form method="post">
     <p>{{ form.username.label}}</p>
     <p>{{ form.username }}</p>

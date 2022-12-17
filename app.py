@@ -1,18 +1,20 @@
-from flask import Flask, render_template, redirect, request, url_for, flash
+from flask import Flask, render_template, redirect, request, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, UserMixin, login_required, current_user
 from wtforms import Form, StringField, PasswordField, validators
 from flask_mail import Mail, Message
 import redis
 from datetime import timedelta
+from random import randint
 
 db = SQLAlchemy()
 mail = Mail()
 login_manager = LoginManager()
+r = redis.Redis(host = 'redis', port = 6379, decode_responses=True)
+
 
 app = Flask(__name__)
 
-r = redis.Redis(host = 'redis', port = 6379, decode_responses=True)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:postgrespw@databasepg:5432'
 app.config["SECRET_KEY"] = "uhapw389a3ba30rai3b20sbj"
@@ -31,7 +33,6 @@ login_manager.init_app(app)
 def load_user(user_id):
     return Users.query.get(user_id)
 
-# Users
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -93,24 +94,27 @@ def register():
             db.session.add(new_user)
             db.session.commit()
         except:
-            return "ERROR"
-        heslo = 123
+            flash('ERROR','error')
+            return render_template("register.html", form=form)
+        heslo = randint(111,999)
         r.setex(f"{new_user.username}", timedelta(minutes=1), value = heslo)
         msg = Message('Authentication code.', sender = 'tm6990888@gmail.com', recipients = [f'{new_user.email}'])
         msg.body = f"{heslo}"
         mail.send(msg)
-        login_user(new_user)
+        session['new_user'] = new_user.id
         return redirect(url_for("authentication"))
     return render_template("register.html", form=form)
 
 @app.route("/authentication", methods=["GET","POST"])
 def authentication():
     form = AuthenticateForm(request.form)
+    new_user = load_user(session.get('new_user'))
     if request.method == "POST" and form.validate():
-        if form.password.data == r.get(current_user.username):
+        if form.password.data == r.get(new_user.username):
+            login_user(new_user)
             return redirect(url_for("home"))
         else:
-            return f'{r.get(current_user.username)}, {form.password.data}' 
+            flash('Wrong authentication code', 'error') 
     return render_template("authentication.html", form=form)
 
 @app.route("/home")
