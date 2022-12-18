@@ -72,6 +72,7 @@ def login():
         user = Users.query.filter_by(username=form.username.data).first()
         try:
             if user.password == form.password.data:
+                print('tady1')
                 login_user(user)
                 return redirect(url_for('home'))
             else:
@@ -111,11 +112,23 @@ def authentication():
     new_user = load_user(session.get('new_user'))
     if request.method == "POST" and form.validate():
         if form.password.data == r.get(new_user.username):
+            print('tady2')
             login_user(new_user)
             return redirect(url_for("home"))
         else:
             flash('Wrong authentication code', 'error') 
     return render_template("authentication.html", form=form)
+
+@app.route('/send_mail', methods = ['GET'])
+def send():
+    user = load_user(session.get('new_user'))
+    heslo = randint(111,999)
+    r.setex(f"{user.username}", timedelta(minutes=1), value = heslo)
+    msg = Message('Authentication code.', sender = 'tm6990888@gmail.com', recipients = [f'{user.email}'])
+    msg.body = f"{heslo}"
+    mail.send(msg)
+    return redirect(url_for('authentication'))
+
 
 @app.route("/home")
 @login_required
