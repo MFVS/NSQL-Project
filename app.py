@@ -72,9 +72,8 @@ def login():
         user = Users.query.filter_by(username=form.username.data).first()
         try:
             if user.password == form.password.data:
-                print('tady1')
-                login_user(user)
-                return redirect(url_for('home'))
+                send()
+                return redirect(url_for("authentication"))
             else:
                 flash('Check your username and password and try again.', 'error')
         except:
@@ -97,22 +96,21 @@ def register():
         except:
             flash('ERROR','error')
             return render_template("register.html", form=form)
-        heslo = randint(111,999)
-        r.setex(f"{new_user.username}", timedelta(minutes=1), value = heslo)
-        msg = Message('Authentication code.', sender = 'tm6990888@gmail.com', recipients = [f'{new_user.email}'])
-        msg.body = f"{heslo}"
-        mail.send(msg)
         session['new_user'] = new_user.id
-        return redirect(url_for("authentication"))
+        send()
     return render_template("register.html", form=form)
 
 @app.route("/authentication", methods=["GET","POST"])
 def authentication():
     form = AuthenticateForm(request.form)
     new_user = load_user(session.get('new_user'))
+    # heslo = randint(111,999)
+    # r.setex(f"{new_user.username}", timedelta(minutes=1), value = heslo)
+    # msg = Message('Authentication code.', sender = 'tm6990888@gmail.com', recipients = [f'{new_user.email}'])
+    # msg.body = f"{heslo}"
+    # mail.send(msg)
     if request.method == "POST" and form.validate():
         if form.password.data == r.get(new_user.username):
-            print('tady2')
             login_user(new_user)
             return redirect(url_for("home"))
         else:
