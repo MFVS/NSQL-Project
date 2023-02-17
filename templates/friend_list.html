@@ -6,5 +6,34 @@
     <input type="submit">
 </form>
 
-<h1>{{ text }}</h1>
+<h1>{{ another_user }}</h1>
+
+<div class="container d-flex justify-content-center border rounded bg-light w-25 p-3 my-5 mx-auto" >
+
+
+<table>
+    <tr>
+      <th>Pending friend requests</th>
+    </tr>
+    {% for i in pending %}
+    <tr>
+      <td>{{ i.username }}</td>
+      <td><a href='/accept_request/{{i.username}}'>Accept friend request</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <table>
+    <tr>
+      <th>Friend</th>
+    </tr>
+    {% for i in friends %}
+    <tr>
+      <td>{{ i.username }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+</div>
+
 {% endblock %}

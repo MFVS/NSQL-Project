@@ -97,6 +97,7 @@ def login():
         user = Users.query.filter_by(username=form.username.data).first()
         try:
             if user.password == form.password.data:
+                session['new_user'] = user.id
                 return send()
             else:
                 flash('Check your username and password and try again.', 'error')
@@ -119,10 +120,9 @@ def register():
             db.session.commit()
         except:
             flash('ERROR', 'error')
-            return render_template("register.html", form=form)
-        with driver:
-            with driver.session() as neo:
-                neo.execute_write(neo_fs.create_user, new_user.username)
+            return render_template("register.html", form=form)    
+        with driver.session() as neo:
+            neo.execute_write(neo_fs.create_user, new_user.username)
         session['new_user'] = new_user.id
         return send()
     return render_template("register.html", form=form)
@@ -147,12 +147,17 @@ def friends():
     if request.method == 'POST':
         another_user = request.form['text']
         try:
-            neo_fs.create_pending(current_user.username, another_user)
+            with driver.session() as neo:
+                neo.execute_write(neo_fs.create_pending, current_user.username, another_user)
         except:
-            print('nejde to')
+            flash('nejde to', 'error')
             return render_template('friend_list.html')
         return render_template('friend_list.html', another_user=another_user)
-    return render_template('friend_list.html')
+    with driver.session() as neo:
+        pending = neo.execute_write(neo_fs.get_pending, current_user.username)
+    with driver.session() as neo:
+        friends = neo.execute_write(neo_fs.get_friends, current_user.username)
+    return render_template('friend_list.html', pending = pending, friends = friends)
 
 
 @app.route('/send_mail', methods=['GET'])
@@ -171,6 +176,12 @@ def send():
 @login_required
 def home():
     return render_template("home.html")
+
+@app.route('/accept_request/<friend>')
+def accept(friend):
+    with driver.session() as neo:
+        neo.execute_write(neo_fs.create_friend, current_user.username, friend)
+    return redirect(url_for('friends'))
 
 
 @app.route("/logout")
