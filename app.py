@@ -23,13 +23,13 @@ driver = GraphDatabase.driver("neo4j://neo4j:7687", auth=("neo4j", "test_heslo")
 app = Flask(__name__)
 
 # App config
-# gglordstanda@gmail.cz Hovnokleslo
+# hovn0vpacholiku@gmail.cz hovnovpacholiku
 app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:postgrespw@databasepg:5432'
 app.config["SECRET_KEY"] = "uhapw389a3ba30rai3b20sbj"
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'gglordstanda@gmail.com'
-app.config['MAIL_PASSWORD'] = 'igumsdmflvaihgnr'
+app.config['MAIL_USERNAME'] = 'hovn0vpacholiku@gmail.com'
+app.config['MAIL_PASSWORD'] = 'vtxctgxwwgcxfwpi'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail.init_app(app)
@@ -133,9 +133,13 @@ def authentication():
 @app.route('/friend_list', methods=['GET', 'POST'])
 def friends():
     if request.method == 'POST':
-        neo_fs.create_pending()
-        text = request.form['text']
-        return render_template('friend_list.html', text=text)
+        another_user = request.form['text']
+        try:
+            neo_fs.create_pending(current_user.username, another_user)
+        except:
+            print('nejde to')
+            return render_template('friend_list.html')
+        return render_template('friend_list.html', another_user=another_user)
     return render_template('friend_list.html')
 
 
