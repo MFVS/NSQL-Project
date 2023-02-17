@@ -13,11 +13,13 @@ import neo_fs
 
 # setup Mongo
 MONGO_URI = "mongodb://user:password@mongo/test"
-client = MongoClient()
+client = None
 try:
-    client.admin.command('ping')
-except ConnectionFailure:
-    print("Server not available")
+    client = MongoClient(MONGO_URI)
+    # client.admin.command('ping')
+    print("MongoDB connected.")
+except ConnectionFailure as e:
+    print("MongoDB not available." + str(e))
 
 # setup psql with sqlalchemy and mail
 db = SQLAlchemy()

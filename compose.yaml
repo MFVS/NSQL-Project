@@ -19,7 +19,15 @@ services:
   mongo:
     image: mongo
     ports:
-      - 27017:2701
+      - 27017:27017
+      - 27018:27018
+      - 27019:27019
+      - 27020:27020
+    expose:
+      - 2017
+      - 2018
+      - 2019
+      - 2020
     environment:
       - MONGO_INITDB_ROOT_USERNAME=user
       - MONGO_INITDB_ROOT_PASSWORD=password
