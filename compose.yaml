@@ -19,7 +19,11 @@ services:
   mongo:
     image: mongo
     ports:
-      - 27017:27017
+      - 27017:2701
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=test
     networks:
       - cirkushumberto
   neo4j:

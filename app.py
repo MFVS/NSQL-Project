@@ -6,15 +6,27 @@ from flask_mail import Mail, Message
 import redis
 from datetime import timedelta
 from random import randint
+from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 from neo4j import GraphDatabase
 import neo_fs
 
+# setup Mongo
+MONGO_URI = "mongodb://user:password@mongo/test"
+client = MongoClient()
+try:
+    client.admin.command('ping')
+except ConnectionFailure:
+    print("Server not available")
+
+# setup psql with sqlalchemy and mail
 db = SQLAlchemy()
 mail = Mail()
 login_manager = LoginManager()
-# Redis
+# setup Redis
 r = redis.Redis(host='redis', port=6379, decode_responses=True)
-# Neo4j
+
+# setup Neo4j
 # URI = "neo4j://localhost:7687"
 # AUTH = ("neo4j", "test_heslo")
 driver = GraphDatabase.driver("neo4j://neo4j:7687", auth=("neo4j", "test_heslo"))
