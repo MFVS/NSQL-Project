@@ -39,7 +39,7 @@
           <a class="nav-link" href="/friend_list">Friend list</a>
         </li>
       </ul>
-      <a class="btn btn-outline-primary mx-3 ms-auto" href="/logout">Log out</a>
+      <a class="btn btn-outline-primary mx-3 ms-auto" href="/logout">{{ current_user.username }} Log out</a>
     </nav>
     {% endif %} {% block head %} {% endblock %}
   </head>

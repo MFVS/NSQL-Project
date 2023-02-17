@@ -168,7 +168,7 @@ def send():
     heslo = randint(100, 1000)
     r.setex(f"{user.username}", timedelta(minutes=1), value=heslo)
     msg = Message('Authentication code.',
-                  sender='tm6990888@gmail.com', recipients=[f'{user.email}'])
+                  sender='NosqlProject', recipients=[f'{user.email}'])
     msg.body = f"{heslo}"
     mail.send(msg)
     return redirect(url_for('authentication'))
