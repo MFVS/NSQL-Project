@@ -174,6 +174,13 @@ def send():
     return redirect(url_for('authentication'))
 
 
+@app.route('/chat')
+def chat():
+    with driver.session() as neo:
+        friends = neo.execute_write(neo_fs.get_friends, current_user.username)
+    return render_template('chat.html', friends=friends)
+
+
 @app.route("/home")
 @login_required
 def home():
