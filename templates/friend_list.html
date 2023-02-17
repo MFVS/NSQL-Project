@@ -1,0 +1,10 @@
+{% extends 'base.html' %} {% block head %} {% endblock %}
+
+{% block body %}
+<form method="POST">
+    <input name="text">
+    <input type="submit">
+</form>
+
+<h1>{{ text }}</h1>
+{% endblock %}

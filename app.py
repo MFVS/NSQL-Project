@@ -6,15 +6,23 @@ from flask_mail import Mail, Message
 import redis
 from datetime import timedelta
 from random import randint
+from neo4j import GraphDatabase
+import neo_fs
 
 db = SQLAlchemy()
 mail = Mail()
 login_manager = LoginManager()
+# Redis
 r = redis.Redis(host='redis', port=6379, decode_responses=True)
+# Neo4j
+# URI = "neo4j://localhost:7687"
+# AUTH = ("neo4j", "test_heslo")
+driver = GraphDatabase.driver("neo4j://neo4j:7687", auth=("neo4j", "test_heslo"))
 
 
 app = Flask(__name__)
 
+# App config
 # gglordstanda@gmail.cz Hovnokleslo
 app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:postgrespw@databasepg:5432'
 app.config["SECRET_KEY"] = "uhapw389a3ba30rai3b20sbj"
@@ -33,6 +41,8 @@ login_manager.init_app(app)
 def load_user(user_id):
     return Users.query.get(user_id)
 
+# tabulka Users
+
 
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -45,6 +55,7 @@ with app.app_context():
     db.create_all()
 
 
+# Forms
 class RegistrationForm(Form):
     username = StringField('Username: ', [validators.Length(min=4, max=15)])
     email = EmailField("Email: ", [validators.Length(min=6, max=25)])
@@ -65,7 +76,7 @@ class LoginForm(Form):
 class AuthenticateForm(Form):
     password = PasswordField('Code: ', [validators.DataRequired()])
 
-
+# Routy
 @app.route('/', methods=['GET', 'POST'])
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -97,6 +108,9 @@ def register():
         except:
             flash('ERROR', 'error')
             return render_template("register.html", form=form)
+        with driver:
+            with driver.session() as neo:
+                neo.execute_write(neo_fs.create_user, new_user.username)
         session['new_user'] = new_user.id
         return send()
     return render_template("register.html", form=form)
@@ -116,10 +130,19 @@ def authentication():
     return render_template("authentication.html", form=form)
 
 
+@app.route('/friend_list', methods=['GET', 'POST'])
+def friends():
+    if request.method == 'POST':
+        neo_fs.create_pending()
+        text = request.form['text']
+        return render_template('friend_list.html', text=text)
+    return render_template('friend_list.html')
+
+
 @app.route('/send_mail', methods=['GET'])
 def send():
     user = load_user(session.get('new_user'))
-    heslo = randint(111, 999)
+    heslo = randint(100, 1000)
     r.setex(f"{user.username}", timedelta(minutes=1), value=heslo)
     msg = Message('Authentication code.',
                   sender='tm6990888@gmail.com', recipients=[f'{user.email}'])
@@ -145,6 +168,11 @@ def logout():
 def database():
     users = Users.query.order_by(Users.id).all()
     return render_template("database.html", users=users)
+
+
+@app.route('/favicon.ico')
+def icon():
+    return app.send_static_file('static/images/spaceship.png')
 
 
 if __name__ == "__main__":
