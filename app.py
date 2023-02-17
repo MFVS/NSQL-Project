@@ -27,12 +27,11 @@ mail = Mail()
 login_manager = LoginManager()
 # setup Redis
 r = redis.Redis(host='redis', port=6379, decode_responses=True)
-
 # setup Neo4j
 # URI = "neo4j://localhost:7687"
 # AUTH = ("neo4j", "test_heslo")
-driver = GraphDatabase.driver("neo4j://neo4j:7687", auth=("neo4j", "test_heslo"))
-
+neo_driver = GraphDatabase.driver("neo4j://neo4j:7687", auth=("neo4j", "test_heslo"))
+neo_session = neo_driver.session()
 
 app = Flask(__name__)
 
@@ -122,9 +121,8 @@ def register():
             db.session.commit()
         except:
             flash('ERROR', 'error')
-            return render_template("register.html", form=form)    
-        with driver.session() as neo:
-            neo.execute_write(neo_fs.create_user, new_user.username)
+            return render_template("register.html", form=form)
+        neo_session.execute_write(neo_fs.create_user, new_user.username)
         session['new_user'] = new_user.id
         return send()
     return render_template("register.html", form=form)
@@ -149,16 +147,14 @@ def friends():
     if request.method == 'POST':
         another_user = request.form['text']
         try:
-            with driver.session() as neo:
-                neo.execute_write(neo_fs.create_pending, current_user.username, another_user)
+            # with neo_driver.session() as neo:
+            neo_session.execute_write(neo_fs.create_pending, current_user.username, another_user)
         except:
             flash('nejde to', 'error')
             return render_template('friend_list.html')
         return render_template('friend_list.html', another_user=another_user)
-    with driver.session() as neo:
-        pending = neo.execute_write(neo_fs.get_pending, current_user.username)
-    with driver.session() as neo:
-        friends = neo.execute_write(neo_fs.get_friends, current_user.username)
+    pending = neo_session.execute_write(neo_fs.get_pending, current_user.username)
+    friends = neo_session.execute_write(neo_fs.get_friends, current_user.username)
     return render_template('friend_list.html', pending = pending, friends = friends)
 
 
@@ -176,8 +172,23 @@ def send():
 
 @app.route('/chat')
 def chat():
-    with driver.session() as neo:
-        friends = neo.execute_write(neo_fs.get_friends, current_user.username)
+    friends = neo_session.execute_write(neo_fs.get_friends, current_user.username)
+    if len(friends) > 0:
+        # redirects to chat with available friend if possible
+        friend = friends.pop()
+        return redirect("/chat/" "{}".format(friend.get("username")))
+    default_messages = ["You have no friends yet :("]
+    return render_template('chat.html', friends=friends, messages=default_messages)
+
+# on click on friend-list in chatroom
+@app.route('/chat/<username>', methods=['POST','GET'])
+def chat_someone(username):
+    assert(username and len(username)>0)
+    if request.method == 'POST':
+        raise Exception("This should run when you try to send a message to a friend. This is not implemented.")
+        return "", 504
+    friends = neo_session.execute_write(neo_fs.get_friends, current_user.username)
+    # TODO: render messages from mongo
     return render_template('chat.html', friends=friends)
 
 
@@ -188,8 +199,7 @@ def home():
 
 @app.route('/accept_request/<friend>')
 def accept(friend):
-    with driver.session() as neo:
-        neo.execute_write(neo_fs.create_friend, current_user.username, friend)
+    neo_session.execute_write(neo_fs.create_friend, current_user.username, friend)
     return redirect(url_for('friends'))
 
 

@@ -11,7 +11,7 @@
     </tr>
     {% for i in friends %}
     <tr>
-      <td><a class='btn btn-primary mx-3 ms-auto'>{{ i.username }}</a></td>
+      <td><a href="/chat/{{i.username}}" method="post" class='btn btn-primary mx-3 ms-auto'>{{ i.username }}</a></td>
     </tr>
     {% endfor %}
   </table>
@@ -20,6 +20,14 @@
 
 <div class= 'container d-flex col-sm mh-50'>
 <textarea style = 'min-height:200px; max-height:200px;'></textarea>
+  <table>
+    <tr><th>Messages</th></tr>
+    {% for i in messages%}
+    <tr>
+      <td>{{i}}</td>
+    </tr>
+    {% endfor %}
+  </table>
 </div>
 
 <div class = 'col-sm'>
