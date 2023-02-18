@@ -36,7 +36,6 @@ neo_session = neo_driver.session()
 app = Flask(__name__)
 
 # App config
-# hovn0vpacholiku@gmail.cz hovnovpacholiku
 app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:postgrespw@databasepg:5432'
 app.config["SECRET_KEY"] = "uhapw389a3ba30rai3b20sbj"
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -55,8 +54,6 @@ def load_user(user_id):
     return Users.query.get(user_id)
 
 # tabulka Users
-
-
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -146,6 +143,7 @@ def authentication():
 def friends():
     pending = neo_session.execute_write(neo_fs.get_pending, current_user.username)
     friends = neo_session.execute_write(neo_fs.get_friends, current_user.username)
+    outgoing = neo_session.execute_write(neo_fs.get_outgoing, current_user.username)
     if request.method == 'POST':
         another_user = request.form['text']
         if another_user in [i.get('username') for i in friends]:
@@ -153,13 +151,13 @@ def friends():
         else:
             neo_session.execute_write(neo_fs.create_pending, current_user.username, another_user)
             return redirect(url_for('friends'))
-    return render_template('friend_list.html', pending = pending, friends = friends)
+    return render_template('friend_list.html', pending = pending, friends = friends, outgoing = outgoing)
 
 
 @app.route('/send_mail', methods=['GET'])
 def send():
     user = load_user(session.get('new_user'))
-    heslo = randint(100, 1000)
+    heslo = r.execute_command('ACL GENPASS 9')
     r.setex(f"{user.username}", timedelta(minutes=1), value=heslo)
     msg = Message('Authentication code.',
                   sender='NosqlProject', recipients=[f'{user.email}'])

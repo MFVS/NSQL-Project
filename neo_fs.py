@@ -41,6 +41,14 @@ def get_pending(tx, username):
         pending.append(record["pending"])
     return pending
 
+def get_outgoing(tx, username):
+    outgoing = []
+    result = tx.run('MATCH (x:User) WHERE x.username = $username ' 
+                    'MATCH (x)-[:Pending]->(y) return y AS outgoing', username=username)
+    for record in result:
+        outgoing.append(record["outgoing"])
+    return outgoing
+
 def get_friends(tx, username):
     friends = []
     result = tx.run('MATCH (x:User) WHERE x.username = $username ' 

@@ -11,6 +11,19 @@
 
 <div class = 'row gx-5'>
 
+<div class="container-fluid d-flex justify-content-center border rounded bg-light p-3 my-5 mx-auto end col-3" >
+  <table>
+    <tr>
+      <th class='text-center'>Outgoing friend requests</th>
+    </tr>
+    {% for i in outgoing %}
+    <tr>
+      <td>{{ i.username }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
 <div class="container-fluid d-flex justify-content-center border rounded bg-light p-3 my-5 mx-auto start col-3" >
 <table>
     <tr>

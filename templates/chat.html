@@ -6,11 +6,11 @@
 <div class="container d-flex border rounded my-5 p-3 bg-light col-1" >
 
 <table>
-    <tr>
+    <tr class='align-top'>
       <th>Friends</th>
     </tr>
     {% for i in friends %}
-    <tr>
+    <tr class='align-top'>
       <td><a href="/chat/{{i.username}}" method="post" class='btn btn-outline-primary mx-3 ms-auto'>{{ i.username }}</a></td>
     </tr>
     {% endfor %}
@@ -18,16 +18,18 @@
 
 </div>
 
-<div class= 'container d-flex border rounded my-5 p-3 col-5 bg-light'>
+<div class= 'container d-flex border rounded my-5 p-3 col-5 bg-light' style='height : 80vh;'>
   <table>
-    <tr><th>Messages</th></tr>
+    <tr class='align-top'>
+      <th>Messages</th>
+    </tr>
     {% for i in messages %}
     <tr>
-      <td>{{i}}</td>
+      <td class='align-top'>{{i}}</td>
     </tr>
     {% endfor %}
     <tr>
-        <textarea class='m-3' style = 'min-height:200px; max-height:200px;'></textarea>
+        <textarea class='m-3'></textarea>
     </tr>
   </table>
 </div>
