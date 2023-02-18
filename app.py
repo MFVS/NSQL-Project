@@ -40,8 +40,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:postgrespw@databa
 app.config["SECRET_KEY"] = "uhapw389a3ba30rai3b20sbj"
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'hovn0vpacholiku@gmail.com'
-app.config['MAIL_PASSWORD'] = 'vtxctgxwwgcxfwpi'
+app.config['MAIL_USERNAME'] = 'nsqlprojecttest@gmail.com'
+app.config['MAIL_PASSWORD'] = 'rfllcnnpprqxunyg'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail.init_app(app)
