@@ -12,10 +12,10 @@ from neo4j import GraphDatabase
 import neo_fs
 
 # setup Mongo
-MONGO_URI = "mongodb://user:password@mongo/test"
-client = None
+MONGO_URI = "mongodb://user:password@mongo"
+mongo_client = None
 try:
-    client = MongoClient(MONGO_URI)
+    mongo_client = MongoClient(MONGO_URI)
     # client.admin.command('ping')
     print("MongoDB connected.")
 except ConnectionFailure as e:
@@ -145,6 +145,7 @@ def friends():
     friends = neo_session.execute_write(neo_fs.get_friends, current_user.username)
     outgoing = neo_session.execute_write(neo_fs.get_outgoing, current_user.username)
     if request.method == 'POST':
+        # neo_session.execute_write(neo_fs.delete_all_duplicate_relationships)
         another_user = request.form['text']
         if another_user in [i.get('username') for i in friends]:
             return redirect(url_for('friends'))
@@ -181,11 +182,18 @@ def chat():
 def chat_someone(username):
     assert(username and len(username)>0)
     if request.method == 'POST':
-        raise Exception("This should run when you try to send a message to a friend. This is not implemented.")
-        return "", 504
+        message = request.form['textbox']
+        if message == "":
+            raise Exception("no message supplied, for now this is considered an error")
+        entry = {"Sender":current_user.username, "Text":message}
+        mongo_client["test"]["messages"].insert_one({"Sender":current_user.username, "Recipient":username, "Text":message})
+        return redirect('/chat/{}'.format(username))
     friends = neo_session.execute_write(neo_fs.get_friends, current_user.username)
-    # TODO: render messages from mongo
-    messages = ['Ahoj', 'Nazdar', 'To nám dneska ale pěkně svítí sluníčko.', 'xdd']
+    condition = {"Sender":current_user.username, "Recipient":username}
+    outgoing_messages = list(mongo_client["test"]["messages"].find(condition))
+    condition = {"Sender":username, "Recipient":current_user.username}
+    incoming_messages = list(mongo_client["test"]["messages"].find(condition))
+    messages = [message.get("Sender") + "->" + str(message.get("Recipient"))+"\t"+message.get("Text") for message in incoming_messages + outgoing_messages]
     return render_template('chat.html', friends=friends, messages = messages)
 
 
