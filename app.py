@@ -144,17 +144,15 @@ def authentication():
 
 @app.route('/friend_list', methods=['GET', 'POST'])
 def friends():
-    if request.method == 'POST':
-        another_user = request.form['text']
-        try:
-            # with neo_driver.session() as neo:
-            neo_session.execute_write(neo_fs.create_pending, current_user.username, another_user)
-        except:
-            flash('nejde to', 'error')
-            return render_template('friend_list.html')
-        return render_template('friend_list.html', another_user=another_user)
     pending = neo_session.execute_write(neo_fs.get_pending, current_user.username)
     friends = neo_session.execute_write(neo_fs.get_friends, current_user.username)
+    if request.method == 'POST':
+        another_user = request.form['text']
+        if another_user in [i.get('username') for i in friends]:
+            return redirect(url_for('friends'))
+        else:
+            neo_session.execute_write(neo_fs.create_pending, current_user.username, another_user)
+            return redirect(url_for('friends'))
     return render_template('friend_list.html', pending = pending, friends = friends)
 
 
@@ -189,7 +187,8 @@ def chat_someone(username):
         return "", 504
     friends = neo_session.execute_write(neo_fs.get_friends, current_user.username)
     # TODO: render messages from mongo
-    return render_template('chat.html', friends=friends)
+    messages = ['Ahoj', 'Nazdar', 'To nám dneska ale pěkně svítí sluníčko.', 'xdd']
+    return render_template('chat.html', friends=friends, messages = messages)
 
 
 @app.route("/home")
@@ -200,6 +199,11 @@ def home():
 @app.route('/accept_request/<friend>')
 def accept(friend):
     neo_session.execute_write(neo_fs.create_friend, current_user.username, friend)
+    return redirect(url_for('friends'))
+
+@app.route('/unfriend/<friend>')
+def unfriend(friend):
+    neo_session.execute_write(neo_fs.l_friend, current_user.username, friend)
     return redirect(url_for('friends'))
 
 

@@ -1,37 +1,43 @@
 {% extends 'base.html' %} {% block head %} {% endblock %}
 
 {% block body %}
+
+<div class="container d-flex justify-content-center p-3 my-5 mx-auto" >
 <form method="POST">
     <input name="text">
-    <input type="submit" value='Send request'>
+    <input class='btn btn-primary' type="submit" value='Send request'>
 </form>
+</div>
 
+<div class = 'row gx-5'>
 
-<div class="container d-flex justify-content-center border rounded bg-light w-25 p-3 my-5 mx-auto" >
-
-
+<div class="container-fluid d-flex justify-content-center border rounded bg-light p-3 my-5 mx-auto start col-3" >
 <table>
     <tr>
-      <th>Pending friend requests</th>
+      <th class='text-center'>Pending friend requests</th>
     </tr>
     {% for i in pending %}
     <tr>
       <td>{{ i.username }}</td>
-      <td><a href='/accept_request/{{i.username}}'>Accept friend request</a></td>
+      <td><a class='btn btn-success' href='/accept_request/{{i.username}}'>Accept friend request</a></td>
     </tr>
     {% endfor %}
   </table>
+</div>
 
+<div class="container-fluid d-flex justify-content-center border rounded bg-light p-3 my-5 mx-auto end col-3" >
   <table>
     <tr>
-      <th>Friend</th>
+      <th class='text-center'>Friends</th>
     </tr>
     {% for i in friends %}
     <tr>
       <td>{{ i.username }}</td>
+      <td><a class='btn btn-danger' href='/unfriend/{{i.username}}'>Unfriend</a></td>
     </tr>
     {% endfor %}
   </table>
+</div>
 
 </div>
 

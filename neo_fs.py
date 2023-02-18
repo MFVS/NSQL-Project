@@ -5,19 +5,33 @@ def create_user(tx, username):
 def create_pending(tx, username, to_username):
     tx.run("MATCH (x:User) WHERE x.username = $username "
            "MATCH (y:User) WHERE y.username = $to_username "
-           "CREATE (x)-[:Pending]->(y)",
+           "MERGE (x)-[:Pending]->(y) ",
            username=username, to_username=to_username)
+    tx.run("MATCH (x)-[rel:Pending]->(x) "
+           "DELETE rel")
 
 
 def create_friend(tx, username, friend):
     tx.run('MATCH (x:User) where x.username = $username '
            'MATCH (y:User) where y.username = $friend '
            'MATCH (x)<-[rel:Pending]-(y) '
-           'CREATE (x)<-[:Friend]-(y) ' 
-           'CREATE (x)-[:Friend]->(y) '
-           'DELETE rel',
+           'MERGE (x)<-[:Friend]-(y) ' 
+           'MERGE (x)-[:Friend]->(y) '
+           'DELETE rel ',
+           username=username, friend=friend)
+    tx.run('MATCH (x:User) where x.username = $username '
+           'MATCH (y:User) where y.username = $friend '
+           'MATCH (x)-[rel:Pending]->(y) '
+           'DELETE rel ',
            username=username, friend=friend)
 
+def l_friend(tx, username, friend):
+    tx.run('MATCH (x:User) where x.username = $username '
+           'MATCH (y:User) where y.username = $friend '
+           'MATCH (x)<-[rel1:Friend]-(y) '
+           'MATCH (x)-[rel2:Friend]->(y) '
+           'DELETE rel1, rel2',
+           username=username, friend=friend)
 
 def get_pending(tx, username):
     pending = []

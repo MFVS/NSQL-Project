@@ -3,35 +3,38 @@
 {% block body %}
 
 <div class='row'>
-<div class="container d-flex w-25 col-sm" >
+<div class="container d-flex border rounded my-5 p-3 bg-light col-1" >
 
 <table>
     <tr>
-      <th>Friend</th>
+      <th>Friends</th>
     </tr>
     {% for i in friends %}
     <tr>
-      <td><a href="/chat/{{i.username}}" method="post" class='btn btn-primary mx-3 ms-auto'>{{ i.username }}</a></td>
+      <td><a href="/chat/{{i.username}}" method="post" class='btn btn-outline-primary mx-3 ms-auto'>{{ i.username }}</a></td>
     </tr>
     {% endfor %}
   </table>
 
 </div>
 
-<div class= 'container d-flex col-sm mh-50'>
-<textarea style = 'min-height:200px; max-height:200px;'></textarea>
+<div class= 'container d-flex border rounded my-5 p-3 col-5 bg-light'>
   <table>
     <tr><th>Messages</th></tr>
-    {% for i in messages%}
+    {% for i in messages %}
     <tr>
       <td>{{i}}</td>
     </tr>
     {% endfor %}
+    <tr>
+        <textarea class='m-3' style = 'min-height:200px; max-height:200px;'></textarea>
+    </tr>
   </table>
 </div>
 
-<div class = 'col-sm'>
+<div class='col-3'>
 </div>
+
 </div>
 
 {% endblock %}
