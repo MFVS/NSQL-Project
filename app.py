@@ -40,10 +40,11 @@ app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:postgrespw@databa
 app.config["SECRET_KEY"] = "uhapw389a3ba30rai3b20sbj"
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'nsqlprojecttest@gmail.com'
-app.config['MAIL_PASSWORD'] = 'rfllcnnpprqxunyg'
+app.config['MAIL_USERNAME'] = 'nevimkamo26@gmail.com'
+app.config['MAIL_PASSWORD'] = 'Nevimkamo69'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
+ALLOW_INVALID_HOST_MAIL = True
 mail.init_app(app)
 db.init_app(app)
 login_manager.init_app(app)
@@ -163,7 +164,11 @@ def send():
     msg = Message('Authentication code.',
                   sender='NosqlProject', recipients=[f'{user.email}'])
     msg.body = f"{heslo}"
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except Exception as e:
+        if not ALLOW_INVALID_HOST_MAIL:
+            raise e. with_traceback()
     return redirect(url_for('authentication'))
 
 
